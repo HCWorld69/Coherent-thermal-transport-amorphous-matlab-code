@@ -1,0 +1,46 @@
+Here is my approximate MATLAB code for calculating the complete thermal conductivity using the equation given in the text:
+
+
+
+% Define parameters
+kB = 1.38064852e-23; % Boltzmann constant
+V = volume; % volume of the amorphous domain
+T = temperature; % temperature
+pi = 3.14159265358979323846; % pi
+ln2 = log(2); % natural logarithm of 2
+
+% Calculate coherence time and lifetime
+tau_c = coherence_time; % modal coherence time
+tau_p = lifetime; % modal lifetime
+
+% Calculate classical specific heat per mode
+C_v_clas = kB / V;
+
+% Calculate wavelike thermal conductivity
+kappa_w = 0;
+for alpha = 1:3 % loop over cartesian coordinates
+    for v = 1:num_modes % loop over modes
+        % Calculate group velocity
+        v_group = domega_dq(v,alpha);
+        
+        % Calculate wavelike thermal conductivity for this mode and cartesian coordinate
+        kappa_w = kappa_w + C_v_clas * v_group^2 * sqrt(pi / (4 * ln2)) * tau_c * exp((tau_c^2) / (128 * ln2 * tau_p^2));
+    end
+end
+kappa_w = kappa_w / 3;
+
+% Calculate particlelike thermal conductivity
+kappa_p = 0;
+for alpha = 1:3 % loop over cartesian coordinates
+    for lambda = 1:num_modes % loop over modes
+        % Calculate particlelike thermal conductivity for this mode and cartesian coordinate
+        kappa_p = kappa_p + C_v_clas * domega_dq(lambda,alpha)^2 * tau_p;
+    end
+end
+kappa_p = kappa_p / 3;
+
+% Calculate complete thermal conductivity
+kappa = kappa_p + kappa_w;
+
+
+Note that some parameters, such as volume, temperature, coherence_time, lifetime, num_modes, and domega_dq (which calculates the group velocity), need to be defined or calculated beforehand. Also, the quantum correction to the specific heat is not included in this code.

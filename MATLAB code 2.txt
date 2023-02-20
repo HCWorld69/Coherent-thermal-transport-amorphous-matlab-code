@@ -1,0 +1,43 @@
+Here is my pseudo MATLAB code for calculating the complete thermal conductivity $\kappa_{p+w}$ of a material with particlelike and wavelike behaviors based on Eq. (1):
+
+
+
+% Input parameters:
+% Cv_clas: classical specific heat per mode
+% v: group velocity of mode along cartesian coordinates
+% tau_c: modal coherence time
+% tau_p: modal lifetime
+% freq: frequency of modes for different wavevectors and polarizations
+% temp: temperature of the material
+
+% Particlelike thermal conductivity
+kappa_p = (1/3) * sum(sum(Cv_clas .* v.^2 .* tau_p));
+
+% Coherent thermal conductivity
+k_B = 1.380649e-23; % Boltzmann constant
+h_bar = 1.0545718e-34; % Reduced Planck constant
+V = volume_of_material; % Volume of the material
+
+kappa_pw = zeros(size(freq)); % Initialize the array
+
+for alpha = 1:3 % Loop over cartesian coordinates
+    for nu = 1:num_modes % Loop over modes
+        x = (h_bar * freq(nu)) / (k_B * temp);
+        Cv_qua = (k_B * exp(x)) / V * ((x / (exp(x) - 1))^2); % Quantum specific heat
+        coherence_factor = exp((tau_c(nu)^2) / (128 * log(2) * tau_p(nu)^2));
+        kappa_pw(nu) = kappa_pw(nu) + (1/3) * Cv_clas(nu) * v(nu, alpha)^2 ...
+            * sqrt(pi / (4 * log(2))) * tau_c(nu) * coherence_factor ...
+            * (Cv_qua / Cv_clas(nu))^(3/2); % Add contribution from each mode
+    end
+end
+
+kappa_pw = sum(kappa_pw); % Sum over all modes
+
+% Total thermal conductivity
+kappa = kappa_p + kappa_pw;
+
+
+Note that some input parameters, such as the specific heat and group velocity, need to be obtained from experimental or theoretical studies.
+
+
+
